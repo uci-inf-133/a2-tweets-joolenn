@@ -82,7 +82,14 @@ class Tweet {
             return "unknown";
         }
         //TODO: parse the activity type from the text of the tweet
-        return "";
+        // pattern is: "Just completed / posted a X.XX km/mi ACTIVITY_TYPE"
+        // extract the activity type btwn the dist and either " - " or " with"
+        const match = this.text.match(/\d+\.\d+\s+(km|mi)\s+(\w+)/);
+
+        if (match) {
+            return match[2];
+        }
+        return "unknown";
     }
 
     get distance():number {
