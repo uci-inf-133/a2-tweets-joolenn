@@ -78,18 +78,24 @@ class Tweet {
     }
 
     get activityType():string {
-        if (this.source != 'completed_event') {
-            return "unknown";
-        }
         //TODO: parse the activity type from the text of the tweet
-        // pattern is: "Just completed / posted a X.XX km/mi ACTIVITY_TYPE"
-        // extract the activity type btwn the dist and either " - " or " with"
-        const match = this.text.match(/\d+\.\d+\s+(km|mi)\s+(\w+)/);
-
-        if (match) {
-            return match[2];
-        }
-        return "unknown";
+        if (this.source != 'completed_event') {
+           return "unknown";
+       }
+       
+       // First try: "X.XX km/mi ACTIVITY_TYPE"
+       let match = this.text.match(/\d+\.\d+\s+(km|mi)\s+(\w+)/);
+       if (match) {
+           return match[2];
+       }
+       
+       // Fallback: "Just posted/completed a ACTIVITY_TYPE" (for time-based activities)
+       match = this.text.match(/Just (?:completed|posted) a (?:\d+\.\d+ (?:km|mi) )?(\w+)/);
+       if (match) {
+           return match[1];
+       }
+       
+       return "unknown";
     }
 
     get distance():number {
@@ -97,11 +103,33 @@ class Tweet {
             return 0;
         }
         //TODO: prase the distance from the text of the tweet
+        // Extract distance (pattern: X.XX km or X.XX mi)
+        const match = this.text.match(/(\d+\.\d+)\s+(km|mi)/);
+
+        if (match) {
+            const distance = parseFloat(match[1]);
+            const unit = match[2];
+
+            //convert km to mi to stay consistent
+            // 1 mi = 1.609 km, so 1 km = 1/1.609 mi 
+            if (unit === 'km') {
+                return distance / 1.609; // convert mi to km
+            }
+            return distance;
+        }
         return 0;
     }
 
     getHTMLTableRow(rowNumber:number):string {
         //TODO: return a table row which summarizes the tweet with a clickable link to the RunKeeper activity
-        return "<tr></tr>";
+        // extract url from tweet!!
+        const urlMatch = this.text.match(/https?:\/\/\S+/);
+        const url = urlMatch ? urlMatch[0] : '#';
+
+        return `<tr>
+            <th scope="row">${rowNumber}</th>
+            <td>${this.activityType}</td>
+            <td><a href="${url}" target="_blank">${this.writtenText || this.text}</a></td>
+        </tr>`;
     }
 }
