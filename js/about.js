@@ -9,6 +9,14 @@ function parseTweets(runkeeper_tweets) {
 		return new Tweet(tweet.text, tweet.created_at);
 	});
 
+	// ADD THESE DEBUG LINES HERE:
+	console.log('Total tweets:', tweet_array.length);
+	console.log('First tweet text:', tweet_array[0].text);
+	console.log('First tweet source:', tweet_array[0].source);
+	console.log('First 10 sources:', tweet_array.slice(0, 10).map(t => t.source));
+	console.log('Completed count:', tweet_array.filter(t => t.source === 'completed_event').length);
+
+
 	// adding date-formatting code for finding the earliest and latest tweet. updating the spans here:
 
 	// here we collect the times from tweets (needs Tweet.written getter)
@@ -57,21 +65,24 @@ function parseTweets(runkeeper_tweets) {
 	}
 
 	// write counts and percentages into the page
-	document.querySelector('.completedEvents').innerText = completedCnt;
-	document.querySelector('.completedEventsPct').innerText = pct(completedCnt, totalTwt);
+	document.querySelectorAll('.completedEvents').forEach(el => el.innerText = completedCnt);
+	document.querySelectorAll('.completedEventsPct').forEach(el => el.innerText = pct(completedCnt, totalTwt));
 
-	document.querySelector('.liveEvents').innerText = liveCnt;
-	document.querySelector('.liveEventsPct').innerText = pct(liveCnt, totalTwt);
+	document.querySelectorAll('.liveEvents').forEach(el => el.innerText = liveCnt);
+	document.querySelectorAll('.liveEventsPct').forEach(el => el.innerText = pct(liveCnt, totalTwt));
 
-	document.querySelector('.achievements').innerText = achievementCnt;
-	document.querySelector('.achievementsPct').innerText = pct(achievementsCnt, totalTwt);
+	document.querySelectorAll('.achievements').forEach(el => el.innerText = achievementCnt);
+	document.querySelectorAll('.achievementsPct').forEach(el => el.innerText = pct(achievementCnt, totalTwt));
 
-	document.querySelector('.miscellaneous').innerText = miscCnt;
-	document.querySelector('.miscellaneousPct').innerText = pct(miscCnt, totalTwt);
+	document.querySelectorAll('.miscellaneous').forEach(el => el.innerText = miscCnt);
+	document.querySelectorAll('.miscellaneousPct').forEach(el => el.innerText = pct(miscCnt, totalTwt));
+
+	document.querySelectorAll('.written').forEach(el => el.innerText = writtenCnt);
+	document.querySelectorAll('.writtenPct').forEach(el => el.innerText = pct(writtenCnt, completedCnt));
 
 	// written tweets inside completed events (hasnt been implemented yet)
-	document.querySelector('.written').innerText = writtenCnt;
-	document.querySelector('.writtenPct').innerText = pct(writtenCnt, completedCnt);
+	document.querySelectorAll('.written').innerText = writtenCnt;
+	document.querySelectorAll('.writtenPct').innerText = pct(writtenCnt, completedCnt);
 	
 	//This line modifies the DOM, searching for the tag with the numberTweets ID and updating the text.
 	//It works correctly, your task is to update the text of the other tags in the HTML file!

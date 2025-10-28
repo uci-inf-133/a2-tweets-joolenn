@@ -44,6 +44,11 @@ class Tweet {
             return false;
         }
 
+        // Tweets with "with @Runkeeper. Check it out!" are NOT written by users
+        if (this.text.includes('with @Runkeeper. Check it out!')) {
+        return false;
+        }
+
         // check if there is a dash separator followed by user text
         // the pattern is: "Just completed/posted a X.XX km/mi activity - USER TEXT https://... # Runkeeper"
 
@@ -102,7 +107,7 @@ class Tweet {
         if(this.source != 'completed_event') {
             return 0;
         }
-        //TODO: prase the distance from the text of the tweet
+        //TODO: parse the distance from the text of the tweet
         // Extract distance (pattern: X.XX km or X.XX mi)
         const match = this.text.match(/(\d+\.\d+)\s+(km|mi)/);
 
