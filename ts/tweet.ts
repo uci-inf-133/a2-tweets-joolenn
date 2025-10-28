@@ -67,6 +67,13 @@ class Tweet {
             return "";
         }
         //TODO: parse the written text from the tweet
+        const dashIdx = this.text.indexOf(' - ');
+        if (dashIdx != -1) {
+            let userText = this.text.substring(dashIdx + 3);
+            // remove urls and hashtags
+            userText = userText.replace(/https?:\/\/\S+/g, '').replace(/#\w+/g, '').trim();
+            return userText;
+        }
         return "";
     }
 
