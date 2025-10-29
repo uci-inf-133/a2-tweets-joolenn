@@ -1,11 +1,12 @@
---Readme document for *YOUR NAME*, *YOUR_EMAIL@uci.edu*--
+--Readme document for Julianna Nacorda, jmnacord@uci.edu*--
 
 1. How many assignment points do you believe you completed (replace the *'s with your numbers)?
 
-10/10
+11/10
 - 3/3 Summarizing tweets
 - 4/4 Identifying the most popular activities
 - 3/3 Adding a text earch interface
+- 1/1 BONUS FEATURE(!!!): used Vega-lite’s streaming API to dynamically change one chart when the aggregate button is pressed.
 
 2. How long, in hours, did it take you to complete this assignment?
 It took me around 16 hours to complete this assignment.
@@ -30,4 +31,4 @@ N/A
 
 
 5. Is there anything special we need to know in order to run your code?
-N/A
+No, there's nothing special needed to run my code. However, I did include a bonus feature which dynamically updates the data in the same chart using Vega-Lite's data streaming API when you click the button. Instead of two charts, there is only one, which uses view.data('source_0', newData).run() to replace the data without re-rendering the entire chart.
