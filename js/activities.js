@@ -250,8 +250,6 @@ document.getElementById('weekdayOrWeekendLonger').innerText = 'Sunday';
 }  // Closing brace for parseTweets function
 
 
-
-
 //Wait for the DOM to load
 document.addEventListener('DOMContentLoaded', function (event) {
 	loadSavedRunkeeperTweets().then(parseTweets);
