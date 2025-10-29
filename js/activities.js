@@ -79,16 +79,6 @@ function parseTweets(runkeeper_tweets) {
 		day: t.time.toLocaleDateString('en-US', { weekday: 'long' })
 	}));
 
-	// ADD THESE DEBUG LINES:
-console.log('Top 3 activities:', top3);
-console.log('Completed tweets count:', completed_tweets.length);
-console.log('Top3Tweets count:', top3Tweets.length);
-console.log('Sample top3Tweets:', top3Tweets.slice(0, 5));
-console.log('Sample distances:', completed_tweets.slice(0, 5).map(t => ({
-	activity: t.activityType,
-	distance: t.distance,
-	text: t.text
-})));
 
 	// create a scatter plot of distance by day of week (raw data)
 // 	const distance_vis_spec = {
@@ -172,9 +162,9 @@ console.log('Sample distances:', completed_tweets.slice(0, 5).map(t => ({
 
 // Fill in these spans based on the visualizations
 // Look at your aggregated chart to determine these values
-document.getElementById('longestActivityType').innerText = '???'; // Replace with what you see
-document.getElementById('shortestActivityType').innerText = '???'; // Replace with what you see
-document.getElementById('weekdayOrWeekendLonger').innerText = '???'; // 'weekdays' or 'weekends'
+// document.getElementById('longestActivityType').innerText = '???'; // Replace with what you see
+// document.getElementById('shortestActivityType').innerText = '???'; // Replace with what you see
+// document.getElementById('weekdayOrWeekendLonger').innerText = '???'; // 'weekdays' or 'weekends'
 
 // BONUS: Dynamic single chart using Vega-Lite data streaming
 const distance_vis_spec = {
@@ -245,7 +235,7 @@ document.getElementById('distanceVisAggregated').style.display = 'none';
 // Fill in these spans based on the visualizations
 document.getElementById('longestActivityType').innerText = 'bike'; 
 document.getElementById('shortestActivityType').innerText = 'walk';
-document.getElementById('weekdayOrWeekendLonger').innerText = 'Sunday';
+document.getElementById('weekdayOrWeekendLonger').innerText = 'weekends';
 
 }  // Closing brace for parseTweets function
 
