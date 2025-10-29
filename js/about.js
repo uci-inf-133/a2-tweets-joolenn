@@ -80,9 +80,6 @@ function parseTweets(runkeeper_tweets) {
 	document.querySelectorAll('.written').forEach(el => el.innerText = writtenCnt);
 	document.querySelectorAll('.writtenPct').forEach(el => el.innerText = pct(writtenCnt, completedCnt));
 
-	// written tweets inside completed events (hasnt been implemented yet)
-	document.querySelectorAll('.written').innerText = writtenCnt;
-	document.querySelectorAll('.writtenPct').innerText = pct(writtenCnt, completedCnt);
 	
 	//This line modifies the DOM, searching for the tag with the numberTweets ID and updating the text.
 	//It works correctly, your task is to update the text of the other tags in the HTML file!
