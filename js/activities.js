@@ -79,15 +79,112 @@ function parseTweets(runkeeper_tweets) {
 		day: t.time.toLocaleDateString('en-US', { weekday: 'long' })
 	}));
 
+	// ADD THESE DEBUG LINES:
+console.log('Top 3 activities:', top3);
+console.log('Completed tweets count:', completed_tweets.length);
+console.log('Top3Tweets count:', top3Tweets.length);
+console.log('Sample top3Tweets:', top3Tweets.slice(0, 5));
+console.log('Sample distances:', completed_tweets.slice(0, 5).map(t => ({
+	activity: t.activityType,
+	distance: t.distance,
+	text: t.text
+})));
+
 	// create a scatter plot of distance by day of week (raw data)
-	const distance_vis_spec = {
+// 	const distance_vis_spec = {
+// 	"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+// 	"description": "Distance by day of week for top 3 activities",
+// 		"data": {
+// 			"values": top3Tweets
+// 		},
+// 		"mark": "point",
+// 		"encoding": {
+// 		"x": {
+// 			"field": "day",
+// 			"type": "nominal",
+// 			"title": "Time (Day of Week)",
+// 			"sort": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+// 		},
+// 		"y": {
+// 			"field": "distance",
+// 			"type": "quantitative",
+// 			"title": "Distance (miles)"
+// 		},
+// 		"color": {
+// 			"field": "activity",
+// 			"type": "nominal",
+// 			"title": "Activity Type"
+// 		}
+// 	}
+// }
+
+// // Create aggregated mean plot
+// const distance_vis_aggregated_spec = {
+// 	"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+// 	"description": "Mean distance by day of week for top 3 activities",
+// 	"data": {
+// 		"values": top3Tweets
+// 	},
+// 	"mark": "point",
+// 	"encoding": {
+// 		"x": {
+// 			"field": "day",
+// 			"type": "nominal",
+// 			"title": "Time (Day of Week)",
+// 			"sort": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+// 		},
+// 		"y": {
+// 			"field": "distance",
+// 			"type": "quantitative",
+// 			"title": "Average Distance (miles)",
+// 			"aggregate": "mean"
+// 		},
+// 		"color": {
+// 			"field": "activity",
+// 			"type": "nominal",
+// 			"title": "Activity Type"
+// 		}
+// 	}
+// };
+
+// // Initially show the non-aggregated plot
+// vegaEmbed('#distanceVis', distance_vis_spec, {actions:false});
+// document.getElementById('distanceVisAggregated').style.display = 'none';
+
+// // Add button toggle functionality
+// let showingAggregate = false;
+// document.getElementById('aggregate').addEventListener('click', function() {
+// 	if (showingAggregate) {
+// 		// Show raw data
+// 		document.getElementById('distanceVis').style.display = 'block';
+// 		document.getElementById('distanceVisAggregated').style.display = 'none';
+// 		this.innerText = 'Show means';
+// 		showingAggregate = false;
+// 	} else {
+// 		// Show aggregated data
+// 		document.getElementById('distanceVis').style.display = 'none';
+// 		document.getElementById('distanceVisAggregated').style.display = 'block';
+// 		vegaEmbed('#distanceVisAggregated', distance_vis_aggregated_spec, {actions:false});
+// 		this.innerText = 'Show raw data';
+// 		showingAggregate = true;
+// 	}
+// })
+
+// Fill in these spans based on the visualizations
+// Look at your aggregated chart to determine these values
+document.getElementById('longestActivityType').innerText = '???'; // Replace with what you see
+document.getElementById('shortestActivityType').innerText = '???'; // Replace with what you see
+document.getElementById('weekdayOrWeekendLonger').innerText = '???'; // 'weekdays' or 'weekends'
+
+// BONUS: Dynamic single chart using Vega-Lite data streaming
+const distance_vis_spec = {
 	"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
 	"description": "Distance by day of week for top 3 activities",
-		"data": {
-			"values": top3Tweets
-		},
-		"mark": "point",
-		"encoding": {
+	"data": {
+		"values": top3Tweets  // Start with actual data instead of named dataset
+	},
+	"mark": "point",
+	"encoding": {
 		"x": {
 			"field": "day",
 			"type": "nominal",
@@ -105,67 +202,55 @@ function parseTweets(runkeeper_tweets) {
 			"title": "Activity Type"
 		}
 	}
-}
-
-// Create aggregated mean plot
-const distance_vis_aggregated_spec = {
-	"$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-	"description": "Mean distance by day of week for top 3 activities",
-	"data": {
-		"values": top3Tweets
-	},
-	"mark": "point",
-	"encoding": {
-		"x": {
-			"field": "day",
-			"type": "nominal",
-			"title": "Time (Day of Week)",
-			"sort": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-		},
-		"y": {
-			"field": "distance",
-			"type": "quantitative",
-			"title": "Average Distance (miles)",
-			"aggregate": "mean"
-		},
-		"color": {
-			"field": "activity",
-			"type": "nominal",
-			"title": "Activity Type"
-		}
-	}
 };
 
-// Initially show the non-aggregated plot
-vegaEmbed('#distanceVis', distance_vis_spec, {actions:false});
+vegaEmbed('#distanceVis', distance_vis_spec, {actions:false}).then(result => {
+	const view = result.view;
+	
+	// Button toggle
+	let showingAggregate = false;
+	document.getElementById('aggregate').addEventListener('click', function() {
+		if (showingAggregate) {
+			// Show raw data
+			view.data('source_0', top3Tweets).run();  // 'source_0' is Vega's default data name
+			this.innerText = 'Show means';
+			showingAggregate = false;
+		} else {
+			// Calculate and show aggregated data
+			const aggregated = {};
+			top3Tweets.forEach(t => {
+				const key = `${t.activity}-${t.day}`;
+				if (!aggregated[key]) {
+					aggregated[key] = { activity: t.activity, day: t.day, distances: [] };
+				}
+				aggregated[key].distances.push(t.distance);
+			});
+			
+			const meanData = Object.values(aggregated).map(item => ({
+				activity: item.activity,
+				day: item.day,
+				distance: item.distances.reduce((a, b) => a + b, 0) / item.distances.length
+			}));
+			
+			view.data('source_0', meanData).run();
+			this.innerText = 'Show raw data';
+			showingAggregate = true;
+		}
+	});
+});
+
+// Hide the aggregated div
 document.getElementById('distanceVisAggregated').style.display = 'none';
 
-// Add button toggle functionality
-let showingAggregate = false;
-document.getElementById('aggregate').addEventListener('click', function() {
-	if (showingAggregate) {
-		// Show raw data
-		document.getElementById('distanceVis').style.display = 'block';
-		document.getElementById('distanceVisAggregated').style.display = 'none';
-		this.innerText = 'Show means';
-		showingAggregate = false;
-	} else {
-		// Show aggregated data
-		document.getElementById('distanceVis').style.display = 'none';
-		document.getElementById('distanceVisAggregated').style.display = 'block';
-		vegaEmbed('#distanceVisAggregated', distance_vis_aggregated_spec, {actions:false});
-		this.innerText = 'Show raw data';
-		showingAggregate = true;
-	}
-})
-
 // Fill in these spans based on the visualizations
-// Look at your aggregated chart to determine these values
-document.getElementById('longestActivityType').innerText = '???'; // Replace with what you see
-document.getElementById('shortestActivityType').innerText = '???'; // Replace with what you see
-document.getElementById('weekdayOrWeekendLonger').innerText = '???'; // 'weekdays' or 'weekends'
+document.getElementById('longestActivityType').innerText = 'bike'; 
+document.getElementById('shortestActivityType').innerText = 'walk';
+document.getElementById('weekdayOrWeekendLonger').innerText = 'Sunday';
 
-}
+}  // Closing brace for parseTweets function
+
+
+
 
 //Wait for the DOM to load
 document.addEventListener('DOMContentLoaded', function (event) {
